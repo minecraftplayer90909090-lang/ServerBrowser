@@ -1,0 +1,35 @@
+name: Build ServerBrowser 1.21.11
+
+on:
+  push:
+    branches: [ latest ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'microsoft'
+
+      - name: Grant gradlew permission
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+        env:
+          GRADLE_OPTS: "-Xmx3G"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ServerBrowser-1.21.11
+          path: |
+            fabric/build/libs/*.jar
+            forge/build/libs/*.jar
+          if-no-files-found: warn
